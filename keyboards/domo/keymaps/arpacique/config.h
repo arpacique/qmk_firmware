@@ -9,4 +9,6 @@
 #define NO_ACTION_MACRO
 #define NO_ACTION_ONESHOT
 #define NO_ACTION_FUNCTION
+#define TAPPING_TERM 175
+#define OLED_FONT_HEIGHT 32
 // Size optimisations END

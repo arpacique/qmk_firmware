@@ -1,43 +1,77 @@
 #include QMK_KEYBOARD_H
 // #include <print.h>
 
+// Tap Dance declarations
+enum {
+    TD_2_0,
+    TD_3_ENT,
+    TD_9_BSPC
+};
+
+// Tap Dance definitions
+qk_tap_dance_action_t tap_dance_actions[] = {
+    [TD_2_0] = ACTION_TAP_DANCE_DOUBLE(KC_2, KC_0),
+    [TD_3_ENT] = ACTION_TAP_DANCE_DOUBLE(KC_3, KC_ENT),
+    [TD_9_BSPC] = ACTION_TAP_DANCE_DOUBLE(KC_9, KC_BSPC),
+};
+
+
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
-    // Keymap 0: (Base Layer) Default Layer
+    // Keymap 0: Numpad Layer
     [0] = LAYOUT(
-                        KC_HOME, KC_END, KC_DEL,
-                        MO(1), KC_UP, KC_ENTER,
-        KC_AUDIO_MUTE,  KC_LEFT, KC_DOWN, KC_RGHT
+                        KC_7, KC_8,       TD(TD_9_BSPC),
+                        KC_4, KC_5,       KC_6,
+        KC_AUDIO_MUTE,  KC_1, TD(TD_2_0), TD(TD_3_ENT)
     ),
 
-    // Keymap 1: (Function Layer) RGB control Layer
+    // Keymap 0: Arrow Layer
     [1] = LAYOUT(
+                        KC_HOME, KC_END,  KC_BSPC,
+                        KC_DEL,   KC_UP,   KC_ENTER,
+        KC_TRANSPARENT, KC_LEFT, KC_DOWN, KC_RGHT
+    ),
+
+    // Keymap 2: RGB control Layer
+    [2] = LAYOUT(
                         RGB_TOG, RGB_MODE_FORWARD, RGB_MODE_REVERSE,
                         KC_TRANSPARENT, KC_NO, KC_NO,
         KC_TRANSPARENT, KC_NO, KC_NO, KC_NO
     ),
 };
 
+uint8_t selected_layer = 0;
 bool encoder_update_user(uint8_t index, bool clockwise) {
-    if (index == 0) {
-        if (clockwise) {
-            tap_code(KC_VOLU);
-        } else {
-            tap_code(KC_VOLD);
-        }
-    } else if (index == 1) {
-        if (clockwise) {
-            tap_code(KC_PGDOWN);
-        } else {
-            tap_code(KC_PGUP);
-        }
-    }
-    return true;
-}
+  switch (index) {
+    case 0:
+      if (!clockwise && selected_layer  < 2) {
+        selected_layer ++;
+      } else if (clockwise && selected_layer  > 0){
+        selected_layer --;
+      }
+      layer_clear();
+      layer_on(selected_layer);
+      oled_on();
+  }
+  return true;
+};
 
 #ifdef OLED_ENABLE
 void oled_task_user(void) {
-    oled_write_P(PSTR("Hello World!\n"), false);  // Renders a static text
-    oled_scroll_left();  // Turns on scrolling
+    oled_write_P(PSTR("Layer: "), false);
+    switch (get_highest_layer(layer_state)) {
+        case 0:
+            oled_write_P(PSTR("NUMBERS\n"), false);
+            break;
+        case 1:
+            oled_write_P(PSTR("ARROWS\n"), false);
+            break;
+        case 2:
+            oled_write_P(PSTR("RGB\n"), false);
+            break;
+        default:
+            // Or use the write_ln shortcut over adding '\n' to the end of your string
+            oled_write_ln_P(PSTR("Undefined"), false);
+    }
 }
 #endif
 
