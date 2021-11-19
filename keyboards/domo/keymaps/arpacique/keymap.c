@@ -4,14 +4,16 @@
 // Tap Dance declarations
 enum {
     TD_2_0,
-    TD_3_ENT,
-    TD_9_BSPC
+    TD_6_ENT,
+    TD_9_BSPC,
+    TD_3_DOT
 };
 
 // Tap Dance definitions
 qk_tap_dance_action_t tap_dance_actions[] = {
     [TD_2_0] = ACTION_TAP_DANCE_DOUBLE(KC_2, KC_0),
-    [TD_3_ENT] = ACTION_TAP_DANCE_DOUBLE(KC_3, KC_ENT),
+    [TD_6_ENT] = ACTION_TAP_DANCE_DOUBLE(KC_6, KC_ENT),
+    [TD_3_DOT] = ACTION_TAP_DANCE_DOUBLE(KC_3, KC_PDOT),
     [TD_9_BSPC] = ACTION_TAP_DANCE_DOUBLE(KC_9, KC_BSPC),
 };
 
@@ -20,8 +22,8 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     // Keymap 0: Numpad Layer
     [0] = LAYOUT(
                         KC_7, KC_8,       TD(TD_9_BSPC),
-                        KC_4, KC_5,       KC_6,
-        KC_AUDIO_MUTE,  KC_1, TD(TD_2_0), TD(TD_3_ENT)
+                        KC_4, KC_5,       TD(TD_6_ENT),
+        KC_AUDIO_MUTE,  KC_1, TD(TD_2_0), TD(TD_3_DOT)
     ),
 
     // Keymap 0: Arrow Layer
